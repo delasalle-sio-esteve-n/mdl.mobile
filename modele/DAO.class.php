@@ -635,7 +635,7 @@ class DAO
 	// modifié par Jim le 6/5/2015
 function listeSalles()
 	{	
-		
+		//récupération
 		$txt_req = "Select mrbs_room.id, capacity, room_name, room_admin_email, area_name From mrbs_room, mrbs_area Where mrbs_area.id = mrbs_room.area_id ";
 		
 		$req = $this->cnx->prepare($txt_req);
