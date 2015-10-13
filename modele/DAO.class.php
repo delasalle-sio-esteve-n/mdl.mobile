@@ -454,10 +454,26 @@ class DAO
 
 	// envoie un mail à l'utilisateur avec son nouveau mot de passe
 	// retourne true si envoi correct, false en cas de problème d'envoi
-	// modifié par Jim le 6/5/2015
+	// modifié par Esteve le 13/10/2015
 	public function envoyerMdp($nomUser, $nouveauMdp)
 	{	
 		
+		$txt_req = "Select email FROM mrbs_users WHERE :user =	name AND password = :password > 0";
+		$req = $this->cnx->prepare($txt_req);
+		// liaison de la requête et de ses paramètres
+		$req->bindValue("user", $nomUser, PDO::PARAM_STR);
+		$req->bindValue("password", md5($nouveauMdp), PDO::PARAM_STR);
+		// extraction des données
+		$req->execute();
+		$uneLigne = $req->fetch(PDO::FETCH_OBJ);
+	
+		$adresseDestinataire = $uneLigne;
+		$sujet = 'MRBS Votre nouveau mot de passe';
+		$message = 'Votre nouveau mot de passe  est '.$nouveauMdp;
+		$adresseEmetteur = 'delasalle.sio.esnault.j@gmail.com';
+				
+	Outils::envoyerMail($adresseDestinataire, $sujet, $message, $adresseEmetteur);
+	
 	}
 
 	// teste si le digicode saisi ($digicodeSaisi) correspond bien à une réservation
@@ -499,7 +515,8 @@ class DAO
 	// fournit la valeur 0 si le digicode n'est pas bon, 1 si le digicode est bon
 	// modifié par Jim le 18/5/2015
 	public function testerDigicodeBatiment($digicodeSaisi)
-	{	// A FAIRE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	{	
+		// A FAIRE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	}
 
 	// enregistre l'utilisateur dans la bdd
