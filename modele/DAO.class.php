@@ -554,7 +554,9 @@ class DAO
 		 {
 		 	return 1;
 		 }
-			
+		 
+		 // libère les ressources du jeu de données
+		 $req->closeCursor();
 			
 	}
 
@@ -621,7 +623,7 @@ class DAO
 		// exécution de la requete
 		$req->execute();
 		
-		// libère les ressources du jeu de données
+		// libère les ressources du jeu de données	
 		$req->closeCursor();
 		
 		return true;
@@ -631,9 +633,38 @@ class DAO
 	// fournit la liste des salles disponibles à la réservation
 	// le résultat est fourni sous forme d'une collection d'objets Salle
 	// modifié par Jim le 6/5/2015
-	function listeSalles()
-	{	// A FAIRE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+function listeSalles()
+	{	
+		
+		$txt_req = "Select mrbs_room.id, capacity, room_name, room_admin_email, area_name From mrbs_room, mrbs_area Where mrbs_area.id = mrbs_room.area_id ";
+		
+		$req = $this->cnx->prepare($txt_req);
+		
+		$req->execute();
+		
+		$uneLigne = $req->fetch(PDO::FETCH_OBJ);
+		
+		$lesUtilisateurs = array();
+		
+		while($uneLigne)
+		{
+			$unId = $uneLigne -> id;
+			$UneCapacite = $uneLigne -> capacity;
+			$UnNom = $uneLigne -> room_name;
+			$unEmail = $uneLigne -> room_admin_email;
+			$UneArea = $uneLigne -> area_name;
+			
+			$unUtilisateur = new Utilisateur($id, $UneCapacite,  $UnNom, $unEmail, $UneArea);
+			
+			$lesUtilisateurs[] = $unUtilisateur;
+			
+			$uneLigne = $req -> fetch(PDO::FETCH_OBJ);
+		}
+		
+		$req -> closeCursor();
+		return $lesUtilisateurs;
 	}
+	
 }
 	
  // fin de la classe DAO
