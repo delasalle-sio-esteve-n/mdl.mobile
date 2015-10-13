@@ -44,7 +44,7 @@ if ( $nom == "" && $mdp == "" && $numreservation=="")
 	if ( empty ($_POST ["numreservation"]) == true)  $numreservation = "";  else   $numreservation = $_POST ["numreservation"];
 }
 
-// Contr�le de la pr�sence des param�tres
+// Contr�le de la présence des param�tres
 if ( $nom == "" || $mdp == "" || $numreservation == "")
 {	TraitementAnormal ("Erreur : données incomplètes.");
 }
