@@ -471,8 +471,15 @@ class DAO
 		$sujet = 'MRBS Votre nouveau mot de passe';
 		$message = 'Votre nouveau mot de passe  est '.$nouveauMdp;
 		$adresseEmetteur = 'delasalle.sio.esnault.j@gmail.com';
-				
+				if($adresseDestinataire != null)
+				{
 	Outils::envoyerMail($adresseDestinataire, $sujet, $message, $adresseEmetteur);
+	return true;
+				}
+				else 
+				{
+					return false;
+				}
 	
 	}
 
@@ -514,9 +521,41 @@ class DAO
 	// pour l'heure courante
 	// fournit la valeur 0 si le digicode n'est pas bon, 1 si le digicode est bon
 	// modifié par Jim le 18/5/2015
+// teste si le digicode saisi ($digicodeSaisi) correspond bien à une réservation de salle quelconque
+	// pour l'heure courante
+	// fournit la valeur 0 si le digicode n'est pas bon, 1 si le digicode est bon
+	// modifié par MrJ le 13/10/2015
 	public function testerDigicodeBatiment($digicodeSaisi)
 	{	
-		// A FAIRE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//la date d'aujourd'hui au format UNIX
+		$date=time();
+		
+		//récupération de la réservation
+		$txt_req = "Select mrbs_entry.id ";
+		$txt_req = $txt_req . "From mrbs_entry_digicode, mrbs_entry ";
+		$txt_req =  $txt_req . "Where mrbs_entry_digicode.id = mrbs_entry.id ";
+		$txt_req = $txt_req . "And mrbs_entry_digicode.digicode = :digicode ";
+		$txt_req = $txt_req . "And :heure BETWEEN start_time AND end_time;";
+		
+		$req = $this->cnx->prepare($txt_req);
+		// liaison de la requête et de ses paramètres
+		$req -> bindValue("digicode", $digicodeSaisi, PDO::PARAM_STR);
+		$req -> bindValue("heure", $date, PDO::PARAM_INT);
+		
+		//exécution de la requete
+		 $req->execute();
+		 $uneLigne = $req->fetch(PDO::FETCH_OBJ);
+		 
+		 if($uneLigne == "")
+		 {
+		 	return 0;
+		 }
+		 else
+		 {
+		 	return 1;
+		 }
+			
+			
 	}
 
 	// enregistre l'utilisateur dans la bdd
