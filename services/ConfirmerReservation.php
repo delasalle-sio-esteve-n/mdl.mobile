@@ -1,55 +1,55 @@
 <?php
-// Service web du projet Réservations M2L
+// Service web du projet Rï¿½servations M2L
 // Ecrit le 29/09/2015 par MrJ
 
-// Ce service web permet à  un utilisateur de s'authentifier
-// et fournit un flux XML contenant un compte-rendu d'exécution
+// Ce service web permet ï¿½ un utilisateur de s'authentifier
+// et fournit un flux XML contenant un compte-rendu d'exï¿½cution
 
-// Le service web doit recevoir 3 paramètres : nom, mdp, numreservation
-// Les paramètres peuvent être passés par la méthode GET (pratique pour les tests, mais à  éviter en exploitation) :
-//     http://<hébergeur>/ConfirmerReservation.php?nom=zenelsy&mdp=ab&numreservation=1
-// Les paramètres peuvent être passés par la méthode POST (à  privilégier en exploitation pour la confidentialité des données) :
-//     http://<hébergeur>/ConfirmerReservation.php
+// Le service web doit recevoir 3 paramï¿½tres : nom, mdp, numreservation
+// Les paramï¿½tres peuvent ï¿½tre passï¿½s par la mï¿½thode GET (pratique pour les tests, mais ï¿½ ï¿½viter en exploitation) :
+//     http://<hï¿½bergeur>/ConfirmerReservation.php?nom=zenelsy&mdp=ab&numreservation=1
+// Les paramï¿½tres peuvent ï¿½tre passï¿½s par la mï¿½thode POST (ï¿½ privilï¿½gier en exploitation pour la confidentialitï¿½ des donnï¿½es) :
+//     http://<hï¿½bergeur>/ConfirmerReservation.php
 
-// déclaration des variables globales pour pouvoir les utiliser aussi dans les fonctions
-global $doc;		// le document XML à  générer
+// dï¿½claration des variables globales pour pouvoir les utiliser aussi dans les fonctions
+global $doc;		// le document XML ï¿½ gï¿½nï¿½rer
 
 // inclusion de la classe Outils
 include_once ('../modele/Outils.class.php');
 // inclusion des paramÃ¨tres de l'application
 include_once ('../modele/include.parametres.php');
 
-// crée une instance de DOMdocument
+// crï¿½e une instance de DOMdocument
 $doc = new DOMDocument();
 
 // specifie la version et le type d'encodage
 $doc->version = '1.0';
 $doc->encoding = 'ISO-8859-1';
 
-// crée un commentaire et l'encode en ISO
-$elt_commentaire = $doc->createComment('Service web Connecter - BTS SIO - Lycée De La Salle - Rennes');
+// crï¿½e un commentaire et l'encode en ISO
+$elt_commentaire = $doc->createComment('Service web Connecter - BTS SIO - Lycï¿½e De La Salle - Rennes');
 // place ce commentaire Ã  la racine du document XML
 $doc->appendChild($elt_commentaire);
 
-// Récupération des données transmises
-// la fonction $_GET récupère une donnée passée en paramètre dans l'URL par la méthode GET
+// Rï¿½cupï¿½ration des donnï¿½es transmises
+// la fonction $_GET rï¿½cupï¿½re une donnï¿½e passï¿½e en paramï¿½tre dans l'URL par la mï¿½thode GET
 if ( empty ($_GET ["nom"]) == true)  $nom = "";  else   $nom = $_GET ["nom"];
 if ( empty ($_GET ["mdp"]) == true)  $mdp = "";  else   $mdp = $_GET ["mdp"];
 if ( empty ($_GET ["numreservation"]) == true)  $numreservation = "";  else   $numreservation = $_GET ["numreservation"];
-// si l'URL ne contient pas les données, on regarde si elles ont été envoyées par la méthode POST
-// la fonction $_POST récupère une donnée envoyées par la méthode POST
+// si l'URL ne contient pas les donnÃ©es, on regarde si elles ont ï¿½tï¿½ envoyï¿½es par la mï¿½thode POST
+// la fonction $_POST rÃ©cupÃ¨re une donnÃ©e envoyÃ©es par la mÃ©thode POST
 if ( $nom == "" && $mdp == "" && $numreservation=="")
 {	if ( empty ($_POST ["nom"]) == true)  $nom = "";  else   $nom = $_POST ["nom"];
 	if ( empty ($_POST ["mdp"]) == true)  $mdp = "";  else   $mdp = $_POST ["mdp"];
 	if ( empty ($_POST ["numreservation"]) == true)  $numreservation = "";  else   $numreservation = $_POST ["numreservation"];
 }
 
-// Contrôle de la présence des paramètres
+// Contrï¿½le de la prï¿½sence des paramï¿½tres
 if ( $nom == "" || $mdp == "" || $numreservation == "")
-{	TraitementAnormal ("Erreur : données incomplètes.");
+{	TraitementAnormal ("Erreur : donnÃ©es incomplÃ¨tes.");
 }
 else
-{	// connexion du serveur web Ã  la base MySQL ("include_once" peut etre remplacé par "require_once")
+{	// connexion du serveur web Ã  la base MySQL ("include_once" peut etre remplacï¿½ par "require_once")
 include_once ('../modele/DAO.class.php');
 $dao = new DAO();
 $niveauUtilisateur = $dao->getNiveauUtilisateur($nom, $mdp);
@@ -58,19 +58,39 @@ if ( $niveauUtilisateur == "inconnu" )
 	TraitementAnormal("Erreur : authentification incorrecte.");
 else
 {
-	//vérification si le numéro de réservation est existant
+	//vÃ©rification si le numÃ©ro de rÃ©servation est existant
 	$reservationExistante = $dao->existeReservation($numreservation);
 	if($reservationExistante == false)
-		TraitementAnormal("Erreur : numéro de réservation inexistant.");
+		TraitementAnormal("Erreur : numÃ©ro de rÃ©servation inexistant.");
 	else
 	{
-		//vérification si le demandeur est bien l'auteur
+		//vÃ©rification si le demandeur est bien l'auteur
 		$createur = $dao->estLeCreateur($nom, $numreservation);
 		if($createur == false)
-			TraitementAnormal("Erreur : vous n'êtes pas l'auteur de cette réservation.");
+			TraitementAnormal("Erreur : vous n'Ãªtes pas l'auteur de cette rÃ©servation.");
 		else 
 		{
-			
+			$reservation = $dao->getReservation($numreservation);
+			//vÃ©rification si la rÃ©servation n'a pas dÃ©jÃ  Ã©tait confirmÃ©
+			if($reservation -> getStatus() == 0)
+			{
+				TraitementAnormal("Erreur : cette rÃ©servation est dÃ©jÃ  confirmÃ©e.");
+			}
+			else 
+			{
+				
+				//vÃ©rification si la date n'est pas passÃ©
+				if($reservation -> getStart_time() < time())
+				{
+					TraitementAnormal("Erreur : cette rÃ©servation est dÃ©jÃ  passÃ©e.");
+				}
+				//confirmation de la rÃ©servation
+				else 
+				{
+					TraitementNormal("Enregistrement effectuÃ© ; vous allez recevoir un mail de confirmation.");
+					$dao->confirmerReservation($numreservation);
+				}
+			}
 		}
 	}
 }	
@@ -87,12 +107,12 @@ exit;
 
 // fonction de traitement des cas anormaux
 function TraitementAnormal($msg)
-{	// redéclaration des données globales utilisées dans la fonction
+{	// redÃ©claration des donnï¿½es globales utilisï¿½es dans la fonction
 global $doc;
-// crée l'élément 'data' à  la racine du document XML
+// crÃ©e l'Ã©lÃ©ment 'data' ï¿½ la racine du document XML
 $elt_data = $doc->createElement('data');
 $doc->appendChild($elt_data);
-// place l'élément 'reponse' juste après l'élément 'data'
+// place l'Ã©lÃ©ment 'reponse' juste aprï¿½s l'ï¿½lï¿½ment 'data'
 $elt_reponse = $doc->createElement('reponse', $msg);
 $elt_data->appendChild($elt_reponse);
 return;
@@ -102,13 +122,13 @@ return;
 // fonction de traitement des cas normaux
 function TraitementNormal()
 {	
-	// redéclaration des données globales utilisées dans la fonction
+	// redÃ©claration des donnï¿½es globales utilisï¿½es dans la fonction
 	global $doc;
-	// crée l'élément 'data' à  la racine du document XML
+	// crÃ©e l'Ã©lÃ©ment 'data' ï¿½ la racine du document XML
 	$elt_data = $doc->createElement('data');
 	$doc->appendChild($elt_data);
-	// place l'élément 'reponse' juste après l'élément 'data'
-	 $msg = "Enregistrement effectué ; vous allez recevoir un mail de confirmation";
+	// place l'Ã©lÃ©ment 'reponse' juste aprÃ¨s l'ï¿½lï¿½ment 'data'
+	 $msg = "Enregistrement effectuï¿½ ; vous allez recevoir un mail de confirmation";
 	$elt_reponse = $doc->createElement('reponse', $msg);
 	$elt_data->appendChild($elt_reponse);
 	return;
