@@ -550,12 +550,39 @@ class DAO
 	}
 	
 	// supprime l'utilisateur dans la bdd
-	// modifié par Jim le 6/5/2015
+	// modifié par MrJ le 6/10/2015
 	public function supprimerUtilisateur($name)
 	{	
-		//récupération de reservations 
+		//vérification si l'utilisateur à passer des réservations avant de supprimer
+		$aPasserDesReservations=$dao->aPasserDesReservations($name);
+
+		if($aPasserDesReservations == true)
+		{
+			//déclaration du tableau qui va récuperer les résevations
+			$lesReservationsPassees = $dao -> listeReservation($name);
+			$i = 1;
+			while($lesReservations[$i]=="")
+			{
+				$dao -> annulerReservation($this -> id);
+			}
+		}
+		//récupération de reservations
+		$txt_req = "Delete from mrbs_user ";
+		$txt_req = $txt_req . "where name = :name";
+		$req = $this->cnx->prepare($txt_req);
 		
-	}	
+		//liason du paramètres à la requete
+		$req->bindValue("name", $name, PDO::PARAM_STR);
+		
+		// exécution de la requete
+		$req->execute();
+		
+		// libère les ressources du jeu de données
+		$req->closeCursor();
+		
+		
+		
+	}		
 	
 	// fournit la liste des salles disponibles à la réservation
 	// le résultat est fourni sous forme d'une collection d'objets Salle
