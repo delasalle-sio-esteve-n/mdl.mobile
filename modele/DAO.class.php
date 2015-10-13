@@ -518,7 +518,7 @@ class DAO
 		return $ok ;
 	}
 
-// recherche si un utilisateur a passé des réservations à venir et retourne un booléen
+	// recherche si un utilisateur a passé des réservations à venir et retourne un booléen
 	// modifié par Mrj le 6/10/2015
 	public function aPasseDesReservations($name)
 	{	
@@ -539,7 +539,7 @@ class DAO
 		$req->execute();
 		$uneLigne = $req->fetch(PDO::FETCH_OBJ);
 		
-		if($uneLigne=="")
+		if($uneLigne == "")
 		{			
 			return false;
 		}
@@ -553,21 +553,9 @@ class DAO
 	// modifié par MrJ le 6/10/2015
 	public function supprimerUtilisateur($name)
 	{	
-		//vérification si l'utilisateur à passer des réservations avant de supprimer
-		$aPasserDesReservations=$dao->aPasserDesReservations($name);
-
-		if($aPasserDesReservations == true)
-		{
-			//déclaration du tableau qui va récuperer les résevations
-			$lesReservationsPassees = $dao -> listeReservation($name);
-			$i = 1;
-			while($lesReservations[$i]=="")
-			{
-				$dao -> annulerReservation($this -> id);
-			}
-		}
-		//récupération de reservations
-		$txt_req = "Delete from mrbs_user ";
+		
+		//suppression de l'utilisateur
+		$txt_req = "Delete from mrbs_users ";
 		$txt_req = $txt_req . "where name = :name";
 		$req = $this->cnx->prepare($txt_req);
 		
@@ -580,7 +568,7 @@ class DAO
 		// libère les ressources du jeu de données
 		$req->closeCursor();
 		
-		
+		return true;
 		
 	}		
 	
