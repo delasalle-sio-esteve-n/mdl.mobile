@@ -82,7 +82,7 @@ else
 				{
 					$unUtilisateur = $dao ->  getUtilisateur($nom);
 					$outils -> envoyerMail($unUtilisateur -> getEmail(), 'Annulation réservation', 'Votre réservation n°'.$numreservation.' a été annulée ', 'delasalle.sio.esnault.j@gmail.com');
-					TraitementNormal("Enregistrement effectué ; vous allez recevoir un mail de confirmation.");
+					TraitementNormal();
 					$dao -> annulerReservation($numreservation);
 				}
 			
@@ -123,7 +123,7 @@ function TraitementNormal()
 	$elt_data = $doc->createElement('data');
 	$doc->appendChild($elt_data);
 	// place l'élément 'reponse' juste après l'�l�ment 'data'
-	 $msg = "Enregistrement effectu� ; vous allez recevoir un mail de confirmation";
+	 $msg = "Enregistrement effectué ; vous allez recevoir un mail de confirmation";
 	$elt_reponse = $doc->createElement('reponse', $msg);
 	$elt_data->appendChild($elt_reponse);
 	return;

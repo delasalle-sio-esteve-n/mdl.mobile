@@ -5,10 +5,10 @@
 // Ce service web permet à un utilisateur de s'authentifier
 // et fournit un flux XML contenant un compte-rendu d'ex�cution
 
-// Le service web doit recevoir 1 paramètre : nomn
-// Les param�tres peuvent être passés par la méthode GET (pratique pour les tests, mais à éviter en exploitation) :
+// Le service web doit recevoir 1 paramètre : nom
+// Les paramètres peuvent être passés par la méthode GET (pratique pour les tests, mais à éviter en exploitation) :
 //     http://<hébergeur>/DemanderMdp.php?nom=zenelsy
-// Les param�tres peuvent être passés par la méthode POST (à privilégier en exploitation pour la confidentialité des données) :
+// Les paramètres peuvent être passés par la méthode POST (à privilégier en exploitation pour la confidentialité des données) :
 //     http://<hébergeur>/DemanderMdp.php
 
 // déclaration des variables globales pour pouvoir les utiliser aussi dans les fonctions
