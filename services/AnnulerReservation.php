@@ -2,17 +2,17 @@
 // Service web du projet R�servations M2L
 // Ecrit le 29/09/2015 par MrJ
 
-// Ce service web permet � un utilisateur de s'authentifier
-// et fournit un flux XML contenant un compte-rendu d'ex�cution
+// Ce service web permet à un utilisateur de s'authentifier
+// et fournit un flux XML contenant un compte-rendu d'exécution
 
-// Le service web doit recevoir 3 param�tres : nom, mdp, numreservation
-// Les param�tres peuvent �tre pass�s par la m�thode GET (pratique pour les tests, mais � �viter en exploitation) :
-//     http://<h�bergeur>/ConfirmerReservation.php?nom=zenelsy&mdp=ab&numreservation=1
-// Les param�tres peuvent �tre pass�s par la m�thode POST (� privil�gier en exploitation pour la confidentialit� des donn�es) :
-//     http://<h�bergeur>/ConfirmerReservation.php
+// Le service web doit recevoir 3 paramètres : nom, mdp, numreservation
+// Les param�tres peuvent être passés par la méthode GET (pratique pour les tests, mais à éviter en exploitation) :
+//     http://<hébergeur>/AnnulerReservation.php?nom=zenelsy&mdp=ab&numreservation=1
+// Les paramètres peuvent être passés par la méthode POST (à privilègier en exploitation pour la confidentialité des données) :
+//     http://<hébergeur>/AnnulerReservation.php
 
 // d�claration des variables globales pour pouvoir les utiliser aussi dans les fonctions
-global $doc;		// le document XML � g�n�rer
+global $doc;		// le document XML à générer
 
 // inclusion de la classe Outils
 include_once ('../modele/Outils.class.php');
@@ -26,7 +26,7 @@ $doc = new DOMDocument();
 $doc->version = '1.0';
 $doc->encoding = 'ISO-8859-1';
 
-// cr�e un commentaire et l'encode en ISO
+// crée un commentaire et l'encode en ISO
 $elt_commentaire = $doc->createComment('Service web Connecter - BTS SIO - Lyc�e De La Salle - Rennes');
 // place ce commentaire à la racine du document XML
 $doc->appendChild($elt_commentaire);
@@ -70,14 +70,7 @@ else
 			TraitementAnormal("Erreur : vous n'êtes pas l'auteur de cette réservation.");
 		else 
 		{
-			$reservation = $dao->getReservation($numreservation);
-			//vérification si la réservation n'a pas déjà était confirmé
-			if($reservation -> getStatus() == 0)
-			{
-				TraitementAnormal("Erreur : cette réservation est déjà confirmée.");
-			}
-			else 
-			{
+			$reservation = $dao->getReservation($numreservation);			
 				
 				//vérification si la date n'est pas passé
 				if($reservation -> getStart_time() < time())
@@ -88,12 +81,11 @@ else
 				else 
 				{
 					$unUtilisateur = $dao ->  getUtilisateur($nom);
-					$outils -> envoyerMail($unUtilisateur -> getEmail(), 'Confirmation réservation', 'Votre réservation n°'.$numreservation.' a été confirmé ', 'delasalle.sio.esnault.j@gmail.com');
+					$outils -> envoyerMail($unUtilisateur -> getEmail(), 'Annulation réservation', 'Votre réservation n°'.$numreservation.' a été annulée ', 'delasalle.sio.esnault.j@gmail.com');
 					TraitementNormal("Enregistrement effectué ; vous allez recevoir un mail de confirmation.");
-					$dao->confirmerReservation($numreservation);
-					
+					$dao -> annulerReservation($numreservation);
 				}
-			}
+			
 		}
 	}
 }	
