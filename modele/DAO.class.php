@@ -637,14 +637,16 @@ function listeSalles()
 	{	
 		//récupération des salles	
 		$txt_req = "Select mrbs_room.id, capacity, room_name, room_admin_email, area_name From mrbs_room, mrbs_area Where mrbs_area.id = mrbs_room.area_id ";
+		
 		//exéctuion de la requete
 		$req = $this->cnx->prepare($txt_req);
 		$req->execute();
 		
+		//récupération du résultat de la requete dans un tabelau uneLigne
 		$uneLigne = $req->fetch(PDO::FETCH_OBJ);
 		
 		$lesUtilisateurs = array();
-		
+		//tant qu'il y a des salles
 		while($uneLigne)
 		{
 			$unId = $uneLigne -> id;
@@ -652,15 +654,16 @@ function listeSalles()
 			$UnNom = $uneLigne -> room_name;
 			$unEmail = $uneLigne -> room_admin_email;
 			$UneArea = $uneLigne -> area_name;
-			
+			//nouvelle utilisateur 
 			$unUtilisateur = new Utilisateur($id, $UneCapacite,  $UnNom, $unEmail, $UneArea);
-			
+			//ajout de l'utilisateur à la collection des utilisateur
 			$lesUtilisateurs[] = $unUtilisateur;
 			
 			$uneLigne = $req -> fetch(PDO::FETCH_OBJ);
 		}
-		
+		//fermeture de la requete
 		$req -> closeCursor();
+		//renvoie la collection d'utilisateur
 		return $lesUtilisateurs;
 	}
 	
