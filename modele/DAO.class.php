@@ -518,10 +518,35 @@ class DAO
 		return $ok ;
 	}
 
-	// recherche si un utilisateur a passé des réservations à venir et retourne un booléen
-	// modifié par Jim le 6/5/2015
+// recherche si un utilisateur a passé des réservations à venir et retourne un booléen
+	// modifié par Mrj le 6/10/2015
 	public function aPasseDesReservations($name)
-	{	// A FAIRE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	{	
+		//la date d'aujourd'hui au format UNIX
+		$date=time();
+		
+		//récupération de reservations
+		$txt_req = "Select mrbs_entry.id ";
+		$txt_req = $txt_req . "From mrbs_entry ";
+		$txt_req = $txt_req . "Where mrbs_entry.create_by= :name ";
+		$txt_req = $txt_req . "And mrbs_entry.end_time > :date ;";
+		$req = $this->cnx->prepare($txt_req);
+		
+		//liason du paramètres à la requete
+		$req->bindValue("name", $name, PDO::PARAM_STR);
+		$req->bindValue("date", $date, PDO::PARAM_INT);
+		// exécution de la requete
+		$req->execute();
+		$uneLigne = $req->fetch(PDO::FETCH_OBJ);
+		
+		if($uneLigne=="")
+		{			
+			return false;
+		}
+		else
+		{			
+			return true;
+		}
 	}
 	
 	// supprime l'utilisateur dans la bdd
